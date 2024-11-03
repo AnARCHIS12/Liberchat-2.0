@@ -97,7 +97,7 @@ Les contributions sont les bienvenues ! Voici comment vous pouvez aider :
 
 ## 📜 Licence
 
-Ce projet est sous licence libre [insérer votre licence préférée ici] - voir le fichier LICENSE pour plus de détails.
+Ce projet est sous licence libre [MIT License] - voir le fichier LICENSE pour plus de détails.
 
 ## ✨ Remerciements
 
