@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiberChat</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Écran de bienvenue -->
+    <div id="welcome-screen" class="fixed inset-0 bg-gray-900 z-50 flex flex-col items-center justify-center p-4">
+        <h1 class="text-4xl font-bold mb-8">Bienvenue sur <span class="text-red-500">LiberChat</span></h1>
+        <div class="text-center max-w-md mb-8">
+            <p>Libérez votre communication avec un espace de gauche militant, libre et sans compromis.</p>
+        </div>
+        <div class="flex flex-col items-center space-y-4">
+            <input type="text" id="username-input" placeholder="Votre nom" 
+                   class="p-2 rounded bg-gray-800 border border-gray-700 focus:outline-none focus:border-red-500">
+            <button id="join-chat" class="px-6 py-2 bg-red-600 rounded hover:bg-red-700 transition-colors">
+                Rejoindre la révolution
+            </button>
+        </div>
+    </div>
+
+    <!-- Container principal du chat -->
+    <div id="chat-container" class="hidden h-screen flex flex-col">
+        <!-- En-tête -->
+        <div class="bg-gray-800 p-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <h1 class="text-xl font-bold">LiberChat</h1>
+                <span id="connection-status" class="ml-3 text-sm text-green-500">●</span>
+            </div>
+            <button id="toggle-fullscreen" class="p-2 hover:bg-gray-700 rounded">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16h4m-4 0v4m0-4l5 5m11-5h-4m4 0v4m0-4l-5 5"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Zone des messages -->
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+
+        <!-- Zone de saisie -->
+        <div class="bg-gray-800 p-4 space-y-4">
+            <div class="flex items-center space-x-4">
+                <label class="cursor-pointer">
+                    <input type="file" id="file-input" class="hidden" accept="image/*,video/*">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </label>
+                <input type="text" id="message-input" placeholder="Votre message..." 
+                       class="flex-1 p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-red-500">
+                <button id="send-message" class="px-4 py-2 bg-red-600 rounded hover:bg-red-700 transition-colors">
+                    Envoyer
+                </button>
+            </div>
+            <div id="upload-preview" class="hidden">
+                <img id="image-preview" class="max-h-32 rounded" src="" alt="Aperçu">
+                <button id="cancel-upload" class="mt-2 text-sm text-red-500">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let username = '';
+
+        // Éléments DOM
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const chatContainer = document.getElementById('chat-container');
+        const usernameInput = document.getElementById('username-input');
+        const joinButton = document.getElementById('join-chat');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-message');
+        const messagesContainer = document.getElementById('chat-messages');
+        const fileInput = document.getElementById('file-input');
+        const uploadPreview = document.getElementById('upload-preview');
+        const imagePreview = document.getElementById('image-preview');
+        const cancelUpload = document.getElementById('cancel-upload');
+        const connectionStatus = document.getElementById('connection-status');
+        const toggleFullscreen = document.getElementById('toggle-fullscreen');
+
+        // Gestion de la connexion
+        socket.on('connect', () => {
+            connectionStatus.classList.remove('text-red-500');
+            connectionStatus.classList.add('text-green-500');
+        });
+
+        socket.on('disconnect', () => {
+            connectionStatus.classList.remove('text-green-500');
+            connectionStatus.classList.add('text-red-500');
+        });
+
+        // Rejoindre le chat
+        joinButton.addEventListener('click', () => {
+            username = usernameInput.value.trim();
+            if (username) {
+                socket.emit('register', username);
+                welcomeScreen.classList.add('hidden');
+                chatContainer.classList.remove('hidden');
+            }
+        });
+
+        usernameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') joinButton.click();
+        });
+
+        // Envoi de messages
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                socket.emit('chat message', message);
+                messageInput.value = '';
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Gestion des fichiers
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                if (!file.type.match('image.*') && !file.type.match('video.*')) {
+                    alert('Seules les images et les vidéos sont acceptées');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        socket.emit('file message', {
+                            fileUrl: data.fileUrl,
+                            fileType: data.fileType
+                        });
+                    }
+                } catch (error) {
+                    console.error('Erreur lors de l\'upload:', error);
+                    alert('Erreur lors de l\'envoi du fichier');
+                }
+
+                fileInput.value = '';
+            }
+        });
+
+        // Réception des messages
+        socket.on('chat message', (msg) => {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'p-3 rounded';
+
+            if (msg.type === 'system') {
+                messageDiv.className += ' bg-gray-800 text-gray-400';
+                messageDiv.textContent = msg.content;
+            } else if (msg.type === 'file') {
+                messageDiv.className += ' bg-gray-800';
+                const username = document.createElement('div');
+                username.className = 'font-bold mb-1';
+                username.textContent = msg.username;
+                messageDiv.appendChild(username);
+
+                if (msg.fileType.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = msg.fileUrl;
+                    img.className = 'max-w-sm rounded';
+                    messageDiv.appendChild(img);
+                } else if (msg.fileType.startsWith('video/')) {
+                    const video = document.createElement('video');
+                    video.src = msg.fileUrl;
+                    video.controls = true;
+                    video.className = 'max-w-sm rounded';
+                    messageDiv.appendChild(video);
+                }
+            } else {
+                messageDiv.className += ' bg-gray-800';
+                const username = document.createElement('div');
+                username.className = 'font-bold mb-1';
+                username.textContent = msg.username;
+                const content = document.createElement('div');
+                content.textContent = msg.content;
+                messageDiv.appendChild(username);
+                messageDiv.appendChild(content);
+            }
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        });
+
+        // Plein écran
+        toggleFullscreen.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        });
+    </script>
+</body>
+</html>
