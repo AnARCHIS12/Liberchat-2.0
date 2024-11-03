@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+    <!-- Fond sombre -->
+    <rect width="800" height="500" fill="#1F2937"/>
+    
+    <!-- Interface du chat -->
+    <rect x="50" y="30" width="700" height="440" rx="8" fill="#111827"/>
+    
+    <!-- Barre d'en-tête -->
+    <rect x="50" y="30" width="700" height="50" rx="8" fill="#374151"/>
+    <text x="80" y="60" fill="#EF4444" font-family="Arial" font-weight="bold" font-size="20">LiberChat</text>
+    <circle cx="180" cy="55" r="4" fill="#10B981"/> <!-- Status connecté -->
+    
+    <!-- Zone de messages -->
+    <g>
+        <!-- Message système -->
+        <rect x="70" y="100" width="300" height="30" rx="4" fill="#374151" opacity="0.7"/>
+        <text x="85" y="120" fill="#9CA3AF" font-family="Arial" font-size="12">Alice a rejoint le chat ✊</text>
+        
+        <!-- Message texte -->
+        <rect x="70" y="150" width="400" height="60" rx="4" fill="#374151"/>
+        <text x="85" y="170" fill="#EF4444" font-family="Arial" font-weight="bold" font-size="14">Bob</text>
+        <text x="85" y="190" fill="#E5E7EB" font-family="Arial" font-size="14">Bienvenue dans la révolution numérique !</text>
+        
+        <!-- Message avec image -->
+        <rect x="70" y="230" width="300" height="160" rx="4" fill="#374151"/>
+        <text x="85" y="250" fill="#EF4444" font-family="Arial" font-weight="bold" font-size="14">Charlie</text>
+        <rect x="85" y="260" width="270" height="120" rx="4" fill="#4B5563"/>
+        <path d="M85 320 L355 320" stroke="#6B7280" stroke-width="1"/>
+        <circle cx="220" cy="290" r="15" fill="#EF4444"/> <!-- Placeholder pour image -->
+    </g>
+    
+    <!-- Zone de saisie -->
+    <rect x="50" y="420" width="700" height="50" rx="8" fill="#374151"/>
+    <rect x="120" y="430" width="540" height="30" rx="4" fill="#4B5563"/>
+    <!-- Icône fichier -->
+    <rect x="70" y="430" width="30" height="30" rx="4" fill="#4B5563"/>
+    <!-- Bouton envoi -->
+    <rect x="680" y="430" width="50" height="30" rx="4" fill="#EF4444"/>
+</svg>
