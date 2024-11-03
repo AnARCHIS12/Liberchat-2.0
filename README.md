@@ -2,6 +2,8 @@
 
 LiberChat est une application de messagerie instantanée libre et open source, conçue pour offrir un espace de communication sécurisé et militant. Cette plateforme met l'accent sur la liberté d'expression tout en respectant les valeurs de gauche et l'éthique du logiciel libre.
 
+![Aperçu de LiberChat](liberchat-preview.svg)
+
 ## 🌟 Fonctionnalités
 
 - 💬 Messagerie instantanée en temps réel
