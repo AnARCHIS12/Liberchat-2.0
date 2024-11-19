@@ -105,14 +105,6 @@ Ce projet est sous licence libre [MIT License] - voir le fichier LICENSE pour pl
 - Aux militants qui inspirent ce projet
 - À tous les contributeurs
 
-## 🔮 Roadmap
-
-- [ ] Ajout du chiffrement de bout en bout
-- [ ] Support des salons thématiques
-- [ ] Système de modération communautaire
-- [ ] Support des mentions
-- [ ] Partage de documents
-- [ ] PWA pour utilisation mobile
 
 ## 📞 Contact
 
