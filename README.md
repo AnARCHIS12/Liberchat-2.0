@@ -38,7 +38,7 @@ LiberChat est une application de messagerie instantanée libre et open source, c
 
 1. Clonez le dépôt :
 ```bash
-git clone [URL_DU_REPO]
+git clone https://github.com/AnARCHIS12/Liberchat-2.0
 cd liberchat
 ```
 
